@@ -7,6 +7,8 @@ import com.example.demo2.domain.Data;
 public interface DataRepository {
 
     Data save(Data data);
+    Data modify(Data data);
+    Integer delete(Integer id);
     List<Data> findAll();
     
 }

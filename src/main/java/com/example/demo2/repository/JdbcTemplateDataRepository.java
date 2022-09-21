@@ -51,10 +51,29 @@ public class JdbcTemplateDataRepository implements DataRepository{
         return data;
     }
 
+    @Override
+    public Integer delete(Integer id){
+        
+        jdbcTemplate.update("delete from data where id=?",
+            id);
+
+        return id;
+    }
+
+    @Override
+    public Data modify(Data data){
+        jdbcTemplate.update("update data set name=?, kind=?, price=?, date=?, seller=?, buyer=?, id=? where id = ?",
+            data.getName(), data.getKind(), data.getPrice(), data.getDate(), data.getSeller(), data.getBuyer(), data.getId(), data.getId());
+
+        return data;
+    }
+
  
     @Override
     public List<Data> findAll() {
+
         return jdbcTemplate.query("select * from data", dataRowMapper());
+        
     }
 
     private RowMapper<Data> dataRowMapper(){
@@ -68,6 +87,7 @@ public class JdbcTemplateDataRepository implements DataRepository{
             data.setDate(rs.getString("date"));
             data.setSeller(rs.getString("seller"));
             data.setBuyer(rs.getString("buyer"));
+            data.setId(rs.getInt("id"));
             
             return data;
         };

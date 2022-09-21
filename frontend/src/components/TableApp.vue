@@ -24,7 +24,8 @@
 
       <p></p>
 
-      <v-btn type="button" @click="add_data">Add Button</v-btn>
+      <v-btn type="button" @click="add_data" v-if="get_data == true">Add Button</v-btn>
+      <v-btn v-model="get_data" type="button" @click="all_data">데이터 불러오기</v-btn>
       <p></p>
 
       <v-data-table style="width: 100%" :headers="headers" :items="contents">
@@ -87,13 +88,13 @@
               <span v-if="item.modify_row != true">{{ item.buyer }}</span>
             </td>
 
-            <v-btn v-if="item.modify_row != true" @click="modify(item)">
+            <v-btn type="button" v-if="item.modify_row != true" @click="modify(item)">
               수정
             </v-btn>
-            <v-btn @click="delete_row(item)" v-if="item.modify_row != true" >
+            <v-btn type="button" @click="delete_row(item)" v-if="item.modify_row != true" >
               삭제
             </v-btn>
-            <v-btn v-if="item.modify_row == true" @click="modify_end(item)">
+            <v-btn type="button" v-if="item.modify_row == true" @click="modify_end(item)">
               수정완료
             </v-btn>
           </tr>
@@ -114,6 +115,7 @@ export default {
       date: "",
       seller: "",
       buyer: "",
+      id: 0,
       modify_row: false,
     },
     row: {
@@ -123,8 +125,11 @@ export default {
       date: "",
       seller: "",
       buyer: "",
+      id: 0,
       modify_row: false,
     },
+
+    get_data : false,
 
     headers: [
       { text: "name", value: "name" },
@@ -144,29 +149,63 @@ export default {
         date: "2020-10-21",
         seller: "김첨지",
         buyer: "닐 잭슨",
+        id : -1,
         modify_row: false,
       },
-      {
-        name: "HW-031",
-        kind: "hanwoo",
-        price: "13808",
-        date: "2020-10-21",
-        seller: "김첨지",
-        buyer: "닐 잭슨",
-        modify_row: false,
-      },
-      {
-        name: "iphone",
-        kind: "device",
-        price: "10000000",
-        date: "2022-09-15",
-        seller: "clara",
-        buyer: "iron",
-        modify_row: false,
-      },
+     
     ], //end of table components
   }), //end of data
   methods: {
+
+    all_data(){
+
+
+      this.get_data = true;
+      this.contents.splice(this.contents, this.contents.length);
+
+      let cardList = new Array();
+      
+      //api 연동
+      this.$axios.get("/api").then(response => {
+
+        //log 찍기
+        console.log('axios 성공: ')
+        console.log(response.data);
+        console.log(response.status);
+        console.log(response.statusText);
+        console.log(response.headers);
+        console.log(response.config);
+
+        cardList = response.data;
+
+
+        //반복문으로 넣어주기
+        for(let i=0;i<cardList.length;i++){
+
+      
+
+        console.log("im in for - :"+ cardList[i].name)
+        
+        //값 8개
+        this.contents.push( { name : cardList[i].name, kind : cardList[i].kind, price : cardList[i].price, date : cardList[i].date,
+        seller : cardList[i].seller, buyer : cardList[i].buyer, id:  cardList[i].id, modify_row: false} )
+
+        }
+
+
+      }).catch(err => {
+        console.log('axios 에러'+err)
+      })
+
+
+
+      
+
+      
+
+
+    },
+
     add_data() {
       console.log("clicked!");
       if (
@@ -194,6 +233,7 @@ export default {
       this.row.date = this.input.date;
       this.row.seller = this.input.seller;
       this.row.buyer = this.input.buyer;
+      this.row.id = this.input.id;
       this.row.modify_row = this.input.modify_row;
 
       //데이터 테이블에 추가
@@ -217,7 +257,7 @@ export default {
         
 
       }).then(res => {
-        console.log('axios 성공: '+res)
+        console.log('axios 성공' + res.data)
       }).catch(err => {
         console.log('axios 에러'+err)
       })
@@ -237,7 +277,24 @@ export default {
     },
 
     delete_row(item) {
-      this.contents.splice(this.contents.indexOf(item), 1);
+
+      //삭제 기능
+      console.log("삭제 대상 아이디: "+item.id);
+
+      //api 연동
+      this.$axios.post("/api/datadelete",
+      { "id" : item.id }  
+      ).then(res => {
+        console.log('axios 성공: '+res)
+      }).catch(err => {
+        console.log('axios 에러'+err)
+      })
+
+      this.all_data();
+
+      //화면만 구현시 
+      //this.contents.splice(this.contents.indexOf(item), 1);
+
     },
     modify(item) {
       item.modify_row = true;
@@ -261,6 +318,31 @@ export default {
       if (item.modify_price != undefined) item.price = item.modify_price;
       if (item.modify_seller != undefined) item.seller = item.modify_seller;
       if (item.modify_buyer != undefined) item.buyer = item.modify_buyer;
+
+      //api 구현
+      //수정 기능
+      console.log("수정 대상 아이디: "+item.id);
+
+      //api 연동
+      this.$axios.post("/api/datamodify",
+      { 
+          "name" : item.name,
+          "kind" : item.kind,
+          "price" : item.price,
+          "date" : item.date,
+          "seller" : item.seller,
+          "buyer" : item.buyer, 
+          "id" : item.id
+      }  
+      ).then(res => {
+        console.log('axios 성공: '+res)
+        this.all_data();
+      }).catch(err => {
+        console.log('axios 에러'+err)
+      })
+
+      
+
     },
   }, //end of methods
 };

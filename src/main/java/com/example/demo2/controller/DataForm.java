@@ -8,6 +8,7 @@ public class DataForm {
     private String date;
     private String seller;
     private String buyer;
+    private Integer id;
 
     public String getName() {
         return this.name;
@@ -55,6 +56,14 @@ public class DataForm {
 
     public void setBuyer(String buyer) {
         this.buyer = buyer;
+    }
+
+    public Integer getId(){
+        return this.id;
+    }
+
+    public void setId(Integer id){
+        this.id = id;
     }
 
 }

@@ -15,7 +15,7 @@ import lombok.Setter;
 public class Data {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) //identity:db가 알아서 생성해줌
-    private Long id; //시스템이 알아서 정해주는 용도
+    private Long id_; //시스템이 알아서 정해주는 용도
     
     @Column(name = "name")
     private String name;
@@ -26,7 +26,7 @@ public class Data {
     @Column(name = "price")
     private String price;
 
-    @Column(name = "date_")
+    @Column(name = "date")
     private String date;
 
     @Column(name = "seller")
@@ -34,5 +34,8 @@ public class Data {
 
     @Column(name = "buyer")
     private String buyer;
+
+    @Column(name = "id")
+    private Integer id;
     
 }

@@ -22,9 +22,21 @@ public class DataService {
         return dataRepository.save(data);
 
     }
+    public Integer delete(Integer id){
+        return dataRepository.delete(id);
+    }
+
+    public Data modify(Data data){
+
+        return dataRepository.modify(data);
+
+    }
 
     public List<Data> findAll(){
+
+        
         return dataRepository.findAll();
+
      }
  
 }
