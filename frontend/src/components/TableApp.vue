@@ -91,12 +91,15 @@
             <v-btn type="button" v-if="item.modify_row != true" @click="modify(item)">
               수정
             </v-btn>
-            <v-btn type="button" @click="delete_row(item)" v-if="item.modify_row != true" >
+            
+            <v-btn type="button" v-if="item.modify_row != true" @click="delete_row(item)"  >
               삭제
             </v-btn>
+            
             <v-btn type="button" v-if="item.modify_row == true" @click="modify_end(item)">
               수정완료
             </v-btn>
+            
           </tr>
         </template>
       </v-data-table>
@@ -146,9 +149,9 @@ export default {
         name: "HW-031",
         kind: "hanwoo",
         price: "13808",
-        date: "2020-10-21",
-        seller: "김첨지",
-        buyer: "닐 잭슨",
+        date: "1999-01-14",
+        seller: "홍길동",
+        buyer: "강호동",
         id : -1,
         modify_row: false,
       },
@@ -258,6 +261,7 @@ export default {
 
       }).then(res => {
         console.log('axios 성공' + res.data)
+        this.all_data();
       }).catch(err => {
         console.log('axios 에러'+err)
       })
@@ -274,28 +278,40 @@ export default {
       this.input.buyer = "";
       this.input.modify_row = false;
 
+      
+
     },
 
     delete_row(item) {
 
-      //삭제 기능
-      console.log("삭제 대상 아이디: "+item.id);
+      if(item.id == -1){
+        //화면만 구현시 
+        this.contents.splice(this.contents.indexOf(item), 1);
+       
+      }
 
-      //api 연동
-      this.$axios.post("/api/datadelete",
-      { "id" : item.id }  
-      ).then(res => {
-        console.log('axios 성공: '+res)
-      }).catch(err => {
-        console.log('axios 에러'+err)
-      })
+      else {
 
-      this.all_data();
+      
+        //삭제 기능
+        console.log("삭제 대상 아이디: "+item.id);
 
-      //화면만 구현시 
-      //this.contents.splice(this.contents.indexOf(item), 1);
+        //api 연동
+        this.$axios.post("/api/datadelete",
+        { "id" : item.id }  
+        ).then(res => {
+          console.log('axios 성공: '+res)
+          this.all_data();
+        }).catch(err => {
+          console.log('axios 에러'+err)
+        })
+
+        
+
+      }
 
     },
+   
     modify(item) {
       item.modify_row = true;
       console.log(item);
@@ -308,9 +324,11 @@ export default {
       item.modify_seller = item.seller;
       item.modify_buyer = item.buyer;
     },
+    
     modify_end(item) {
       console.log(item.modify_row);
-      item.modify_row = false;
+      
+
       //수정완료 버튼 눌렀을 시 변화값 : 수정한 값으로 반영
       if (item.modify_name != undefined) item.name = item.modify_name;
       if (item.modify_kind != undefined) item.kind = item.modify_kind;
@@ -319,31 +337,43 @@ export default {
       if (item.modify_seller != undefined) item.seller = item.modify_seller;
       if (item.modify_buyer != undefined) item.buyer = item.modify_buyer;
 
-      //api 구현
-      //수정 기능
-      console.log("수정 대상 아이디: "+item.id);
 
-      //api 연동
-      this.$axios.post("/api/datamodify",
-      { 
-          "name" : item.name,
-          "kind" : item.kind,
-          "price" : item.price,
-          "date" : item.date,
-          "seller" : item.seller,
-          "buyer" : item.buyer, 
-          "id" : item.id
-      }  
-      ).then(res => {
-        console.log('axios 성공: '+res)
-        this.all_data();
-      }).catch(err => {
-        console.log('axios 에러'+err)
-      })
+      if(item.id != -1){
 
       
+        //api 구현
+        //수정 기능
+        console.log("수정 대상 아이디: "+item.id);
+        
 
+        //api 연동
+        this.$axios.post("/api/datamodify",
+        { 
+            "name" : item.name,
+            "kind" : item.kind,
+            "price" : item.price,
+            "date" : item.date,
+            "seller" : item.seller,
+            "buyer" : item.buyer, 
+            "id" : item.id
+        }  
+        ).then(res => {
+          console.log('axios 성공: '+res)
+          this.all_data();
+        }).catch(err => {
+          console.log('axios 에러'+err)
+        })
+
+        this.all_data();
+
+      }
+      
+      item.modify_row = false;
+      
+      
+      
     },
+   
   }, //end of methods
 };
 </script>
