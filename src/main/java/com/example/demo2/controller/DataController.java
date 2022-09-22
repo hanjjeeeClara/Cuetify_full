@@ -27,7 +27,7 @@ public class DataController {
         this.dataService = dataService;
     }
 
-    //@GetMapping("api")
+ 
     @ResponseBody
     @RequestMapping("api")
     public List<Data> all(){
@@ -40,7 +40,7 @@ public class DataController {
         List<Data>all_data = new ArrayList<>();
         
         all_data = dataService.findAll();
-        //model.addAttribute("model", all_data);
+  
         System.out.println("service.findall후");
 
         

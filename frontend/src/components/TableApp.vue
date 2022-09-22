@@ -24,7 +24,7 @@
 
       <p></p>
 
-      <v-btn type="button" @click="add_data" v-if="get_data == true">Add Button</v-btn>
+      <v-btn type="button" @click="add_data" >Add Button</v-btn>
       <v-btn v-model="get_data" type="button" @click="all_data">데이터 불러오기</v-btn>
       <p></p>
 
@@ -162,6 +162,8 @@ export default {
 
     all_data(){
 
+     
+
 
       this.get_data = true;
       this.contents.splice(this.contents, this.contents.length);
@@ -236,36 +238,40 @@ export default {
       this.row.date = this.input.date;
       this.row.seller = this.input.seller;
       this.row.buyer = this.input.buyer;
-      this.row.id = this.input.id;
+      this.row.id = -1;
       this.row.modify_row = this.input.modify_row;
 
-      //데이터 테이블에 추가
-      this.contents.push(this.row);
-      console.log(this.row);
+      
 
-  
-      //api 연동
-      this.$axios.post("/api/dataform",
-      {
-        //get 경우
-        //params : {
-          "name" : this.input.name,
-          "kind" : this.input.kind,
-          "price" : this.input.price,
-          "date" : this.input.date,
-          "seller" : this.input.seller,
-          "buyer" : this.input.buyer
-       // }
-        
-        
+      if(this.get_data==false){
+        //데이터 테이블에 추가
+        this.contents.push(this.row);
+        console.log(this.row);
+      }
+      else{
 
-      }).then(res => {
-        console.log('axios 성공' + res.data)
-        this.all_data();
-      }).catch(err => {
-        console.log('axios 에러'+err)
-      })
+        //api 연동
+        this.$axios.post("/api/dataform",
+        {
+          //get 경우
+          //params : {
+            "name" : this.input.name,
+            "kind" : this.input.kind,
+            "price" : this.input.price,
+            "date" : this.input.date,
+            "seller" : this.input.seller,
+            "buyer" : this.input.buyer
+        // }
+          
+          
 
+        }).then(res => {
+          console.log('axios 성공' + res.data)
+          this.all_data();
+        }).catch(err => {
+          console.log('axios 에러'+err)
+        })
+      }
      
       
       //text field 비우기
@@ -284,10 +290,10 @@ export default {
 
     delete_row(item) {
 
-      if(item.id == -1){
+      if(item.id == -1 ){
         //화면만 구현시 
         this.contents.splice(this.contents.indexOf(item), 1);
-       
+        
       }
 
       else {
